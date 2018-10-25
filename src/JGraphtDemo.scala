@@ -22,10 +22,19 @@ object JGraphtDemo extends App{
   directedGraph.addEdge("D", "E")
   directedGraph.addEdge("D", "F")
 
-  val clique = new PivotBronKerboschCliqueFinder(directedGraph)
+  val clique = new PivotBronKerboschCliqueFinder(directedGraph).iterator()
 
-  clique.forEach(x => println(x))
+  //clique.forEach(x => println(x))
 
-  println("Hello JGraphtDemo")
+  while(clique.hasNext)
+    println(clique.next)
+
+  //val hiedge = directedGraph.edgeSet()
+
+  //hiedge.forEach(x => println(x))
+
+  directedGraph.edgesOf("B").forEach(x => println(x))
+
+ // println("Hello JGraphtDemo")
 
 }
