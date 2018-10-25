@@ -5,6 +5,11 @@ import org.jgrapht.Graphs
 import org.jgrapht.alg.clique.PivotBronKerboschCliqueFinder
 import org.jgrapht.graph.{DefaultEdge, DefaultUndirectedGraph}
 
+import collection.JavaConverters._
+
+import scala.collection.mutable
+
+
 object JGraphtDemo extends App{
 
 
@@ -35,8 +40,51 @@ object JGraphtDemo extends App{
 
   directedGraph.edgesOf("B").forEach(x => println(x))
 
+  println("A degree is "  + directedGraph.degreeOf("A"))
+  println("B degree is " + directedGraph.degreeOf("B") )
+
+
  // Graphs.getOppositeVertex(directedGraph, e, "B")
 
  // println("Hello JGraphtDemo")
+
+  //directedGraph.edgesOf("A").forEach(x => println(Graphs.getOppositeVertex(directedGraph, x, "A")))
+
+
+  println("choose pivot is " + choosePivot(directedGraph.vertexSet().asScala, Set[String]()))
+
+  def choosePivot(P: mutable.Set[String], X: Set[String]):String = {
+
+    var max: Int = -1
+    var pivot: String = ""
+
+
+    val it = P ++ X
+
+    it.foreach(x => {
+
+      var count = 0
+      println("debug x is " + x)
+
+      directedGraph.edgesOf(x).forEach(y => {
+
+        println("debug edge is " + y)
+        if (it.contains(Graphs.getOppositeVertex(directedGraph, y, x))){
+          count += 1
+        }
+
+      })
+
+      println("debug count is " + count)
+      if (count > max){
+        max = count
+        pivot = x
+      }
+    })
+
+    pivot
+
+  }
+  
 
 }
