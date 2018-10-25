@@ -35,6 +35,8 @@ object JGraphtDemo extends App{
 
   directedGraph.edgesOf("B").forEach(x => println(x))
 
+ // Graphs.getOppositeVertex(directedGraph, e, "B")
+
  // println("Hello JGraphtDemo")
 
 }
