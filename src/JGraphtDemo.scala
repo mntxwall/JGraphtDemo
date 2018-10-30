@@ -9,23 +9,39 @@ import collection.JavaConverters._
 
 import scala.collection.mutable
 
+/**
+  *
+  *找出完全图的思路
+  * 运用动态规划的原理，
+  * 从每条边E出发，把每个顶点的neighbor点找出来，判断neighbor点是否与E相连接，如果有就构成了k=3的完全图
+  * 再从k=3的完全图出发，将完全图中的所有neighbor顶点找到，再次判断是否与完全图中的每个点有相连，如果有相连，那么就构成了k=4的完全图。
+  */
 
 object JGraphtDemo extends App{
 
 
+  //the k-clique
+  val K: Int = 3
+  var maxDegree: Int = 0
 
   val udirectedGraph: DefaultUndirectedGraph[String, DefaultEdge] = new DefaultUndirectedGraph[String, DefaultEdge](classOf[DefaultEdge])
 
-  Graphs.addAllVertices(udirectedGraph, new util.ArrayList[String](util.Arrays.asList("A", "B", "C", "D", "E", "F")))
+  Graphs.addAllVertices(udirectedGraph, new util.ArrayList[String](util.Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9")))
 
-  udirectedGraph.addEdge("A", "B")
-  udirectedGraph.addEdge("A", "C")
-  udirectedGraph.addEdge("A", "D")
-  udirectedGraph.addEdge("B", "C")
-  udirectedGraph.addEdge("B", "D")
-  udirectedGraph.addEdge("C", "D")
-  udirectedGraph.addEdge("D", "E")
-  udirectedGraph.addEdge("D", "F")
+  udirectedGraph.addEdge("1", "2")
+  udirectedGraph.addEdge("1", "3")
+  udirectedGraph.addEdge("1", "4")
+  udirectedGraph.addEdge("2", "3")
+  udirectedGraph.addEdge("3", "4")
+  udirectedGraph.addEdge("4", "5")
+  udirectedGraph.addEdge("4", "6")
+  udirectedGraph.addEdge("5", "6")
+  udirectedGraph.addEdge("5", "7")
+  udirectedGraph.addEdge("5", "8")
+  udirectedGraph.addEdge("6", "7")
+  udirectedGraph.addEdge("6", "8")
+  udirectedGraph.addEdge("7", "8")
+  udirectedGraph.addEdge("7", "9")
 /*
   val clique = new PivotBronKerboschCliqueFinder(udirectedGraph).iterator()
 
@@ -38,10 +54,10 @@ object JGraphtDemo extends App{
 
   //hiedge.forEach(x => println(x))
 
-  udirectedGraph.edgesOf("B").forEach(x => println(x))
+//  udirectedGraph.edgesOf("B").forEach(x => println(x))
 
-  println("A degree is "  + udirectedGraph.degreeOf("A"))
-  println("B degree is " + udirectedGraph.degreeOf("B") )
+ // println("A degree is "  + udirectedGraph.degreeOf("A"))
+ // println("B degree is " + udirectedGraph.degreeOf("B") )
 
 
   //the graph edge set
@@ -52,45 +68,74 @@ object JGraphtDemo extends App{
     //println("Target vertext is " + udirectedGraph.getEdgeTarget(edge))
 
     val edgeVertextSet: Set[String] = Set(udirectedGraph.getEdgeSource(edge), udirectedGraph.getEdgeTarget(edge))
-
-
-
-
-
-
-
   })*/
 
-  val neighborVertexs = mutable.Set[String]()
+  //val neighborVertexs = mutable.Set[String]()
 
   val checkConnectedHash = mutable.HashMap[Set[String], Int]()
 
+  val cliqueSet = mutable.Set[Set[String]]()
 
-  udirectedGraph.getAllEdges("C", "D").forEach(x => {
+//.getAllEdges("C", "D")
+  udirectedGraph.edgeSet.forEach(countEdge => {
 
     //get the vertext of the counting edges
-    val edgeVertextSet: Set[String] = Set(udirectedGraph.getEdgeSource(x), udirectedGraph.getEdgeTarget(x))
+   // val edgeVertextSet: Set[String] = Set(udirectedGraph.getEdgeSource(countEdge), udirectedGraph.getEdgeTarget(countEdge))
+
+    val edgeVertextOne = udirectedGraph.getEdgeSource(countEdge)
+    val edgeVertextTwo = udirectedGraph.getEdgeTarget(countEdge)
+    val edgeVertextSet: Set[String] = Set(edgeVertextOne, edgeVertextTwo)
+
+    //get the max value of degree
+    if (udirectedGraph.degreeOf(edgeVertextOne) > maxDegree) maxDegree = udirectedGraph.degreeOf(edgeVertextOne)
+    if (udirectedGraph.degreeOf(edgeVertextTwo) > maxDegree) maxDegree = udirectedGraph.degreeOf(edgeVertextTwo)
 
     println("Set is " + edgeVertextSet)
 
+    //if edgeVertextSet
     //get the neighbor vertext of the counting edges
-    edgeVertextSet.foreach(edgeVertext => {
-      Graphs.neighborSetOf(udirectedGraph, edgeVertext).forEach( nvSetEle => {
-        if (!edgeVertextSet.contains(nvSetEle)) {
-          //Graphs.getOppositeVertex(udirectedGraph, x, edgeVertext)
-          val newvla: Set[String] = edgeVertextSet + nvSetEle
-          if(!checkConnectedHash.contains(newvla)){
-            checkConnectedHash.put(newvla, 1)
-          }
-          else {
-            checkConnectedHash.apply(newvla) += 1
-          }
-          //println(checkConnectedHash.apply(x))
-          udirectedGraph.containsEdge(edgeVertext, nvSetEle)
-          neighborVertexs += nvSetEle
-        }
+    if(udirectedGraph.degreeOf(edgeVertextOne) >= K - 1 && udirectedGraph.degreeOf(edgeVertextTwo) >= K - 1){
+      edgeVertextSet.foreach(edgeVertext => {
+          Graphs.neighborSetOf(udirectedGraph, edgeVertext).forEach( nvSetEle => {
+
+            println("vertext is " + nvSetEle + " and the degree is " + udirectedGraph.degreeOf(nvSetEle))
+            if (!edgeVertextSet.contains(nvSetEle) && udirectedGraph.degreeOf(nvSetEle) >= K - 1 ) {
+              //Graphs.getOppositeVertex(udirectedGraph, x, edgeVertext)
+              val newvla: Set[String] = edgeVertextSet + nvSetEle
+
+              println("Checking vertexs is " + newvla)
+
+              if (!cliqueSet.contains(newvla)){
+
+                if(!checkConnectedHash.contains(newvla)){
+                  checkConnectedHash.put(newvla, 0)
+                }
+                if (udirectedGraph.containsEdge(edgeVertext, nvSetEle)){
+                  checkConnectedHash.apply(newvla) += 1
+                  print(newvla)
+                  println(" value is " + checkConnectedHash.apply(newvla).toString)
+
+                  if (checkConnectedHash.apply(newvla) >= 2){
+                    cliqueSet += newvla
+                  }
+                }
+              }
+
+
+              //println(checkConnectedHash.apply(x))
+              //udirectedGraph.containsEdge(edgeVertext, nvSetEle)
+              //neighborVertexs += nvSetEle
+            }
+          })
+
+
+
       })
-    })
+
+    }
+
+
+    checkConnectedHash.clear()
 
     /*
     neighborVertexs.foreach( nvSetEle /*short for neighbor vertex set*/ => {
@@ -103,14 +148,10 @@ object JGraphtDemo extends App{
   })
 
 
-  println(checkConnectedHash)
+  println(cliqueSet)
 
   //aaa.foreach()
  // println(aaa)
-
-
-
-
 
 
   //udirectedGraph.incomingEdgesOf("A").forEach(println)
@@ -163,8 +204,5 @@ object JGraphtDemo extends App{
 
   }
   */
-
-
-  
 
 }
