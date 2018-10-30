@@ -85,6 +85,6 @@ object JGraphtDemo extends App{
     pivot
 
   }
-  
+
 
 }
