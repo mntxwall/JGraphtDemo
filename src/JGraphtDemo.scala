@@ -97,7 +97,7 @@ object JGraphtDemo extends App{
   })
 
  // println(cliqueHashMap.apply(2))
-  
+
   //var cliqueResult = cliqueHashMap.apply(2)
 
   var cliqueResult = edgeVertexSet
