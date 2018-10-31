@@ -6,8 +6,8 @@ import org.jgrapht.alg.clique.PivotBronKerboschCliqueFinder
 import org.jgrapht.graph.{DefaultEdge, DefaultUndirectedGraph}
 
 import collection.JavaConverters._
-
 import scala.collection.mutable
+import scala.collection.immutable
 
 /**
   *
@@ -42,6 +42,8 @@ object JGraphtDemo extends App{
   udirectedGraph.addEdge("6", "8")
   udirectedGraph.addEdge("7", "8")
   udirectedGraph.addEdge("7", "9")
+
+  println(udirectedGraph.edgeSet())
 
 
  // println(udirectedGraph.containsEdge("7", "8"))
@@ -79,7 +81,9 @@ object JGraphtDemo extends App{
 
   val cliqueHashMap = mutable.HashMap[Int, mutable.Set[Set[String]]]()
 
-  cliqueHashMap.put(2, mutable.Set[Set[String]]())
+  //cliqueHashMap.put(2, mutable.Set[Set[String]]())
+
+  val edgeVertexSet = mutable.Set[Set[String]]()
 
 //.getAllEdges("C", "D")
   //put each edge vertex in the edge Set
@@ -87,11 +91,12 @@ object JGraphtDemo extends App{
     val edgeVertextOne = udirectedGraph.getEdgeSource(x)
     val edgeVertextTwo = udirectedGraph.getEdgeTarget(x)
     val setVertex: Set[String] = Set(edgeVertextOne, edgeVertextTwo)
-    cliqueHashMap.apply(2) += setVertex
+    //cliqueHashMap.apply(2) += setVertex
+    edgeVertexSet += setVertex
 
   })
 
-  println(cliqueHashMap.apply(2))
+ // println(cliqueHashMap.apply(2))
 
 /*
 
@@ -163,7 +168,13 @@ object JGraphtDemo extends App{
   */
 
 
-  var cliqueResult = cliqueHashMap.apply(2)
+  //var cliqueResult = cliqueHashMap.apply(2)
+
+  var cliqueResult = edgeVertexSet
+
+  val kCliqueGraphHashMap = mutable.HashMap[Int, DefaultUndirectedGraph[Set[String], DefaultEdge]]()
+
+ //   new DefaultUndirectedGraph[Set[String], DefaultEdge](classOf[DefaultEdge])
 
   //var cliqueResult = findClique(3, cliqueHashMap.apply(2))
 
@@ -181,11 +192,81 @@ object JGraphtDemo extends App{
   }
 
 
-  cliqueHashMap.keysIterator.foreach(x => {
+  cliqueHashMap.keysIterator.foreach(cliqueHashMapKey => {
 
-    println(x)
+    val kCliqueGraph = new DefaultUndirectedGraph[Set[String], DefaultEdge](classOf[DefaultEdge])
 
-  })
+    //val edgeCheck = mutable.HashMap[DefaultEdge, Int]()
+
+    if (cliqueHashMap.apply(cliqueHashMapKey).nonEmpty) {
+
+      //formed a new graph and add new vertex
+      cliqueHashMap.apply(cliqueHashMapKey).foreach(cliqueSetA => {
+
+        kCliqueGraph.addVertex(cliqueSetA)
+      })
+
+      val t = kCliqueGraph.vertexSet().asScala.toSeq
+      //println(t(0))
+
+      for (i <- t.indices){
+        var j = i + 1
+        var s = t.length - 1
+        while(j <= s){
+
+          if( !(t(i) == t(j)) ){
+
+            if( !kCliqueGraph.containsEdge(t(i), t(j)) && t(i).intersect(t(j)).size >= cliqueHashMapKey - 1){
+
+              kCliqueGraph.addEdge(t(i), t(j))
+            }
+
+          }
+          if ( !(t(i) == t(s))){
+            if( !kCliqueGraph.containsEdge(t(i), t(s)) && t(i).intersect(t(s)).size >= cliqueHashMapKey - 1){
+              kCliqueGraph.addEdge(t(i), t(s))
+            }
+          }
+          j += 1
+          s -= 1
+        }
+
+      }
+
+/*
+      kCliqueGraph.vertexSet() .forEach(vertexIndexA =>{
+
+        kCliqueGraph.vertexSet().forEach(vertexIndexB =>{
+
+          if (!vertexIndexA.sameElements(vertexIndexB)
+            && !kCliqueGraph.containsEdge(vertexIndexA, vertexIndexB)){
+
+            //kCliqueGraph.edgeS
+            if(vertexIndexA.intersect(vertexIndexB).size >= cliqueHashMapKey - 1){
+
+              kCliqueGraph.addEdge(vertexIndexA, vertexIndexB)
+              /*
+              val tmpEdge =
+
+              if (edgeCheck.contains(tmpEdge))
+                edgeCheck.update(tmpEdge, 1)
+              else
+                edgeCheck.put(tmpEdge, 1)
+*/
+
+
+            }
+          }
+        })
+
+      })// end vertexIndexA
+      */
+    }
+    kCliqueGraphHashMap.put(cliqueHashMapKey, kCliqueGraph)
+
+  })// end cliqueHashMapKey
+
+  println(kCliqueGraphHashMap.apply(3).edgeSet())
 
 
 
