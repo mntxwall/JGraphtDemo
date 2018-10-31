@@ -97,77 +97,7 @@ object JGraphtDemo extends App{
   })
 
  // println(cliqueHashMap.apply(2))
-
-/*
-
-  udirectedGraph.edgeSet.forEach(countEdge => {
-
-    //get the vertext of the counting edges
-   // val edgeVertextSet: Set[String] = Set(udirectedGraph.getEdgeSource(countEdge), udirectedGraph.getEdgeTarget(countEdge))
-
-    val edgeVertextOne = udirectedGraph.getEdgeSource(countEdge)
-    val edgeVertextTwo = udirectedGraph.getEdgeTarget(countEdge)
-    val edgeVertextSet: Set[String] = Set(edgeVertextOne, edgeVertextTwo)
-
-    //get the max value of degree
-    if (udirectedGraph.degreeOf(edgeVertextOne) > maxDegree) maxDegree = udirectedGraph.degreeOf(edgeVertextOne)
-    if (udirectedGraph.degreeOf(edgeVertextTwo) > maxDegree) maxDegree = udirectedGraph.degreeOf(edgeVertextTwo)
-
-    println("Set is " + edgeVertextSet)
-
-    //if edgeVertextSet
-    //get the neighbor vertext of the counting edges
-    if(udirectedGraph.degreeOf(edgeVertextOne) >= K - 1 && udirectedGraph.degreeOf(edgeVertextTwo) >= K - 1){
-      edgeVertextSet.foreach(edgeVertext => {
-          Graphs.neighborSetOf(udirectedGraph, edgeVertext).forEach( nvSetEle => {
-
-            println("vertext is " + nvSetEle + " and the degree is " + udirectedGraph.degreeOf(nvSetEle))
-            if (!edgeVertextSet.contains(nvSetEle) && udirectedGraph.degreeOf(nvSetEle) >= K - 1 ) {
-              //Graphs.getOppositeVertex(udirectedGraph, x, edgeVertext)
-              val newvla: Set[String] = edgeVertextSet + nvSetEle
-
-              println("Checking vertexs is " + newvla)
-
-              if (!cliqueSet.contains(newvla)){
-
-                if(!checkConnectedHash.contains(newvla)){
-                  checkConnectedHash.put(newvla, 0)
-                }
-                if (udirectedGraph.containsEdge(edgeVertext, nvSetEle)){
-                  checkConnectedHash.apply(newvla) += 1
-                  print(newvla)
-                  println(" value is " + checkConnectedHash.apply(newvla).toString)
-
-                  if (checkConnectedHash.apply(newvla) >= 2){
-                    cliqueSet += newvla
-                  }
-                }
-              }
-
-
-              //println(checkConnectedHash.apply(x))
-              //udirectedGraph.containsEdge(edgeVertext, nvSetEle)
-              //neighborVertexs += nvSetEle
-            }
-          })
-
-      })
-
-    }
-    checkConnectedHash.clear()
-
-    /*
-    neighborVertexs.foreach( nvSetEle /*short for neighbor vertex set*/ => {
-
-      /*check is the nvSetEle connect with counting edge*/
-
-
-    })*/
-
-  })
-  */
-
-
+  
   //var cliqueResult = cliqueHashMap.apply(2)
 
   var cliqueResult = edgeVertexSet
@@ -232,35 +162,6 @@ object JGraphtDemo extends App{
         }
 
       }
-
-/*
-      kCliqueGraph.vertexSet() .forEach(vertexIndexA =>{
-
-        kCliqueGraph.vertexSet().forEach(vertexIndexB =>{
-
-          if (!vertexIndexA.sameElements(vertexIndexB)
-            && !kCliqueGraph.containsEdge(vertexIndexA, vertexIndexB)){
-
-            //kCliqueGraph.edgeS
-            if(vertexIndexA.intersect(vertexIndexB).size >= cliqueHashMapKey - 1){
-
-              kCliqueGraph.addEdge(vertexIndexA, vertexIndexB)
-              /*
-              val tmpEdge =
-
-              if (edgeCheck.contains(tmpEdge))
-                edgeCheck.update(tmpEdge, 1)
-              else
-                edgeCheck.put(tmpEdge, 1)
-*/
-
-
-            }
-          }
-        })
-
-      })// end vertexIndexA
-      */
     }
     kCliqueGraphHashMap.put(cliqueHashMapKey, kCliqueGraph)
 
