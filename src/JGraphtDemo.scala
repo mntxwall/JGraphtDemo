@@ -21,7 +21,7 @@ object JGraphtDemo extends App{
 
 
   //the k-clique
-  val K: Int = 3
+  var K: Int = 3
   var maxDegree: Int = 0
 
   val udirectedGraph: DefaultUndirectedGraph[String, DefaultEdge] = new DefaultUndirectedGraph[String, DefaultEdge](classOf[DefaultEdge])
@@ -42,6 +42,11 @@ object JGraphtDemo extends App{
   udirectedGraph.addEdge("6", "8")
   udirectedGraph.addEdge("7", "8")
   udirectedGraph.addEdge("7", "9")
+
+
+ // println(udirectedGraph.containsEdge("7", "8"))
+ // println(udirectedGraph.containsEdge("8", "7"))
+
 /*
   val clique = new PivotBronKerboschCliqueFinder(udirectedGraph).iterator()
 
@@ -72,11 +77,24 @@ object JGraphtDemo extends App{
 
   //val neighborVertexs = mutable.Set[String]()
 
-  val checkConnectedHash = mutable.HashMap[Set[String], Int]()
+  val cliqueHashMap = mutable.HashMap[Int, mutable.Set[Set[String]]]()
 
-  val cliqueSet = mutable.Set[Set[String]]()
+  cliqueHashMap.put(2, mutable.Set[Set[String]]())
 
 //.getAllEdges("C", "D")
+  //put each edge vertex in the edge Set
+  udirectedGraph.edgeSet().forEach(x => {
+    val edgeVertextOne = udirectedGraph.getEdgeSource(x)
+    val edgeVertextTwo = udirectedGraph.getEdgeTarget(x)
+    val setVertex: Set[String] = Set(edgeVertextOne, edgeVertextTwo)
+    cliqueHashMap.apply(2) += setVertex
+
+  })
+
+  println(cliqueHashMap.apply(2))
+
+/*
+
   udirectedGraph.edgeSet.forEach(countEdge => {
 
     //get the vertext of the counting edges
@@ -128,13 +146,9 @@ object JGraphtDemo extends App{
             }
           })
 
-
-
       })
 
     }
-
-
     checkConnectedHash.clear()
 
     /*
@@ -146,63 +160,87 @@ object JGraphtDemo extends App{
     })*/
 
   })
+  */
 
 
-  println(cliqueSet)
+  var cliqueResult = cliqueHashMap.apply(2)
 
-  //aaa.foreach()
- // println(aaa)
+  //var cliqueResult = findClique(3, cliqueHashMap.apply(2))
 
+  while (cliqueResult.nonEmpty){
 
-  //udirectedGraph.incomingEdgesOf("A").forEach(println)
+    cliqueResult = findClique(K, cliqueResult)
 
+    if (!cliqueHashMap.contains(K))
+      cliqueHashMap.put(K, cliqueResult)
+    else
+      cliqueHashMap.update(K, cliqueResult)
 
-  //udirectedGraph.outgoingEdgesOf("A").forEach(println)
-
-
-
-
- // Graphs.getOppositeVertex(udirectedGraph, e, "B")
-
- // println("Hello JGraphtDemo")
-
-  //udirectedGraph.edgesOf("A").forEach(x => println(Graphs.getOppositeVertex(udirectedGraph, x, "A")))
-
-/*
-  println("choose pivot is " + choosePivot(udirectedGraph.vertexSet().asScala, Set[String]()))
-
-  def choosePivot(P: mutable.Set[String], X: Set[String]):String = {
-
-    var max: Int = -1
-    var pivot: String = ""
+    println(s"The $K-clique is ${cliqueHashMap.apply(K)}")
+    K += 1
+  }
 
 
-    val it = P ++ X
+  cliqueHashMap.keysIterator.foreach(x => {
 
-    it.foreach(x => {
+    println(x)
 
-      var count = 0
-      println("debug x is " + x)
+  })
 
-      udirectedGraph.edgesOf(x).forEach(y => {
 
-        println("debug edge is " + y)
-        if (it.contains(Graphs.getOppositeVertex(udirectedGraph, y, x))){
-          count += 1
-        }2
 
+  def findClique(kIndex: Int, kClique: mutable.Set[Set[String]]): mutable.Set[Set[String]] = {
+
+    //Storage the result clique
+    val cliqueSet = mutable.Set[Set[String]]()
+
+    //Storage vertex counting result
+    val checkConnectedHash = mutable.HashMap[Set[String], Int]()
+
+    if (kClique.nonEmpty)
+    {
+      kClique.foreach(cliqueSetIndex => {
+
+       // println("edge is " + cliqueSetIndex)
+        cliqueSetIndex.foreach(cliqueVertextIndex => {
+       //   println("edge vertext is " + cliqueVertextIndex)
+
+          if(udirectedGraph.degreeOf(cliqueVertextIndex) >= kIndex - 1){
+            Graphs.neighborSetOf(udirectedGraph, cliqueVertextIndex).forEach( nvSetEle => {
+
+          //    println("vertext is " + nvSetEle + " and the degree is " + udirectedGraph.degreeOf(nvSetEle))
+              if (!cliqueSetIndex.contains(nvSetEle) && udirectedGraph.degreeOf(nvSetEle) >= kIndex - 1) {
+                //Graphs.getOppositeVertex(udirectedGraph, x, edgeVertext)
+                val newvla: Set[String] = cliqueSetIndex + nvSetEle
+
+           //     println("Checking vertexs is " + newvla)
+
+                if (!cliqueSet.contains(newvla)){
+                  if(!checkConnectedHash.contains(newvla)){
+                    checkConnectedHash.put(newvla, 0)
+                  }
+                  if (udirectedGraph.containsEdge(cliqueVertextIndex, nvSetEle)){
+                    checkConnectedHash.apply(newvla) += 1
+             //       print(newvla)
+              //      println(" value is " + checkConnectedHash.apply(newvla).toString)
+
+                    if (checkConnectedHash.apply(newvla) >= kIndex - 1){
+                      cliqueSet += newvla
+                    }
+                  }
+                }
+              }
+            })
+
+          }
+
+        })
+        checkConnectedHash.clear()
       })
 
-      println("debug count is " + count)
-      if (count > max){
-        max = count
-        pivot = x
-      }
-    })
+    }
 
-    pivot
-
+    cliqueSet
   }
-  */
 
 }
