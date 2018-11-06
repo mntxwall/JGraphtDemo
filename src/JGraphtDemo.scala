@@ -44,40 +44,7 @@ object JGraphtDemo extends App{
   udirectedGraph.addEdge("7", "9")
 
   println(udirectedGraph.edgeSet())
-
-
- // println(udirectedGraph.containsEdge("7", "8"))
- // println(udirectedGraph.containsEdge("8", "7"))
-
-/*
-  val clique = new PivotBronKerboschCliqueFinder(udirectedGraph).iterator()
-
-  //clique.forEach(x => println(x))
-
-  while(clique.hasNext)
-    println(clique.next)
-*/
-  //val hiedge = udirectedGraph.edgeSet()
-
-  //hiedge.forEach(x => println(x))
-
-//  udirectedGraph.edgesOf("B").forEach(x => println(x))
-
- // println("A degree is "  + udirectedGraph.degreeOf("A"))
- // println("B degree is " + udirectedGraph.degreeOf("B") )
-
-
-  //the graph edge set
-/*
-  udirectedGraph.edgeSet.forEach(edge => {
-
-   // println("Source vertext is " + udirectedGraph.getEdgeSource(edge))
-    //println("Target vertext is " + udirectedGraph.getEdgeTarget(edge))
-
-    val edgeVertextSet: Set[String] = Set(udirectedGraph.getEdgeSource(edge), udirectedGraph.getEdgeTarget(edge))
-  })*/
-
-  //val neighborVertexs = mutable.Set[String]()
+  
 
   val cliqueHashMap = mutable.HashMap[Int, mutable.Set[Set[String]]]()
 
@@ -104,9 +71,7 @@ object JGraphtDemo extends App{
 
   val kCliqueGraphHashMap = mutable.HashMap[Int, DefaultUndirectedGraph[Set[String], DefaultEdge]]()
 
- //   new DefaultUndirectedGraph[Set[String], DefaultEdge](classOf[DefaultEdge])
-
-  //var cliqueResult = findClique(3, cliqueHashMap.apply(2))
+  val kCliqueGraphHashMap2 = mutable.HashMap[Int, Set[Set[String]]]()
 
   while (cliqueResult.nonEmpty){
 
@@ -122,6 +87,7 @@ object JGraphtDemo extends App{
   }
 
 
+  //根据找到的完全子图来计算利用CPM计算结果
   cliqueHashMap.keysIterator.foreach(cliqueHashMapKey => {
 
     val kCliqueGraph = new DefaultUndirectedGraph[Set[String], DefaultEdge](classOf[DefaultEdge])
