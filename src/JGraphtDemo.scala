@@ -87,6 +87,7 @@ object JGraphtDemo extends App{
   }
 
 
+  /*
   //根据找到的完全子图来计算利用CPM计算结果
   cliqueHashMap.keysIterator.foreach(cliqueHashMapKey => {
 
@@ -134,6 +135,86 @@ object JGraphtDemo extends App{
   })// end cliqueHashMapKey
 
   println(kCliqueGraphHashMap.apply(3).edgeSet())
+*/
+
+
+  val clusterHashMap = mutable.HashMap[Int, mutable.ListBuffer[mutable.Set[String]]]()
+
+  //val clusterSet = mutable.Set[Set[String]]()
+
+  //a new way to get the clique map
+  cliqueHashMap.keysIterator.foreach(cliqueIndex => {
+
+    //根据k子图，添加空白List有待添加k子图的分组
+    clusterHashMap.put(cliqueIndex, mutable.ListBuffer[mutable.Set[String]]())
+
+    /*
+    *算法描述：
+
+    根据cliqueHashMap中的结构，构建clusterHashMap。
+    clusterHashMap与cliqueHashMap中不一样的地方在于：
+    clusterHashMap用来保存k子图下的分组结果。
+    cliqueHashMpa是保存k子图的结果。
+
+    cliqueHashMap中k子图记为m，其中m(i)表示k子图下的第i个元素。
+    如果m(i)不存在于clusterHashMap中,将m(i)加入到clusterHashMap中记为c(i)。
+
+    做c(i)与m(i)的交集得出结果s(i,i)，如果s(i,i)集合中元素的个数大于等于k-1，
+    那么c(i)和m(i)可以组成一个分组。
+
+    在做分组的过程中会出现c(i)与c(j)和m(i)的交集s(i,i),s(j,i)都会大于等于k-1
+    那么说明c(i)和c(j)是连通的，那么就要合并c(i)和c(j)
+    *
+    *
+    * */
+    cliqueHashMap.apply(cliqueIndex).foreach(cliqueSetA => {
+
+      val tmpCliqueSetAtoMutable = collection.mutable.Set(cliqueSetA.toArray:_*)
+      val clusterSet = clusterHashMap.apply(cliqueIndex)
+
+      var isMerge: Int = 0
+
+  //    println("cliqueSetA is " + cliqueSetA)
+   //   println("tmpR is " + tmpR)
+
+      if (clusterSet.isEmpty){
+
+        clusterSet.append(tmpCliqueSetAtoMutable)
+
+      }
+      else{
+        //用来保存处理过的set，如果还有相同的边，要进行Set合并
+        var maxSet = mutable.Set[String]()
+        var listIndex: Int = 0
+
+        clusterSet.foreach(clusterIndexSet => {
+
+          if (clusterIndexSet.intersect(cliqueSetA).size >= cliqueIndex - 1){
+
+            if (maxSet.isEmpty){
+              listIndex = clusterSet.indexOf(clusterIndexSet)
+              clusterIndexSet ++= tmpCliqueSetAtoMutable
+              isMerge = 1
+              maxSet = clusterIndexSet
+            }
+            else{
+              clusterSet(listIndex) ++= tmpCliqueSetAtoMutable
+              clusterSet -= clusterIndexSet
+            }
+          }
+        })
+        if (isMerge == 0){
+          clusterSet.append(tmpCliqueSetAtoMutable)
+        }
+
+
+      }
+
+    })
+
+  })
+
+  println(clusterHashMap)
 
 
 
